@@ -1,0 +1,3 @@
+[submodule "lib/event_thread"]
+	path = lib/event_thread
+	url = https://github.com/jinkim31/event_thread.git
