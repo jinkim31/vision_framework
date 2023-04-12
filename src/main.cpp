@@ -7,39 +7,40 @@
 #include <imgui_tex_inspect/imgui_tex_inspect.h>
 
 cv::Mat mat;
+int count =0;
+
 void Gui()
 {
     Widget::setStyle();
     ImPlot::ShowDemoWindow();
     ImGui::ShowDemoWindow();
 
+    mat = cv::Mat::zeros(300, 300, CV_8UC1);
+    cv::putText(mat, std::to_string(count++), cv::Point(10, mat.rows), cv::FONT_HERSHEY_DUPLEX,2.0,255, 2);
+
+
     ImGui::Begin("Image view");
     {
-        //ImmVision::ImageDisplay("", mat, {(int) ImGui::GetContentRegionAvail().x,(int) ImGui::GetContentRegionAvail().y-100}, true, true);
-        static ImTextureID textureId = 0;
-        if(textureId==0)
-            textureId = HelloImGui::ImTextureIdFromAsset("../assets/world.jpg");
-
-        std::cout<<"tex:"<<textureId<<std::endl;
-        static ImVec2 textureSize(512.f, 512.f);
-        ImGui::Text("texinspect");
-        ImGuiTexInspect::InspectorFlags flags=0;
-        flags |= ImGuiTexInspect::InspectorFlags_FillVertical;
-        flags |= ImGuiTexInspect::InspectorFlags_FillHorizontal;
-        ImGuiTexInspect::SizeIncludingBorder inspectorSize({ImGui::GetContentRegionAvail().x,ImGui::GetContentRegionAvail().y});
-        if(ImGuiTexInspect::BeginInspectorPanel("Inspector", textureId, textureSize, flags, inspectorSize))
-            ImGuiTexInspect::EndInspectorPanel();
+        static ImmVision::ImageParams p;
+        p.RefreshImage = true;
+        p.ImageDisplaySize = {(int) ImGui::GetContentRegionAvail().x,(int) ImGui::GetContentRegionAvail().y-50};
+        p.ShowSchoolPaperBackground = false;
+        p.ShowOptionsInTooltip = true;
+        p.ShowOptionsButton = false;
+        p.ShowImageInfo = false;
+        p.ShowPixelInfo = false;
+        ImmVision::Image("", mat, &p);
     }ImGui::End();
 }
 
 int main(int , char *[])
 {
-    mat = cv::imread("../assets/world.jpg");
     HelloImGui::RunnerParams runnerParams;
     runnerParams.callbacks.SetupImGuiStyle = Widget::setStyle;
     runnerParams.callbacks.ShowGui = Gui;
     runnerParams.imGuiWindowParams.defaultImGuiWindowType = HelloImGui::DefaultImGuiWindowType::ProvideFullScreenDockSpace;
     runnerParams.imGuiWindowParams.enableViewports = false;
+    runnerParams.fpsIdling.enableIdling = false;
 
     ImmApp::AddOnsParams addOnsParams;
     addOnsParams.withMarkdown = true;
