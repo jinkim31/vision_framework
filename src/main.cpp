@@ -4,23 +4,32 @@
 #include "eventThread.h"
 #include <opencv2/opencv.hpp>
 #include "custom_widgets.h"
+#include <imgui_tex_inspect/imgui_tex_inspect.h>
 
 cv::Mat mat;
 void Gui()
 {
-    //Widget::setStyle();
+    Widget::setStyle();
     ImPlot::ShowDemoWindow();
     ImGui::ShowDemoWindow();
 
-    /*
     ImGui::Begin("Image view");
     {
-        std::cout << "avail:" << ImGui::GetContentRegionAvail().x << "," << ImGui::GetContentRegionAvail().y
-                  << std::endl;
-        ImmVision::ImageDisplay("", mat, {(int) ImGui::GetContentRegionAvail().x / 2,
-                                          (int) ImGui::GetContentRegionAvail().y / 2}, true);
+        //ImmVision::ImageDisplay("", mat, {(int) ImGui::GetContentRegionAvail().x,(int) ImGui::GetContentRegionAvail().y-100}, true, true);
+        static ImTextureID textureId = 0;
+        if(textureId==0)
+            textureId = HelloImGui::ImTextureIdFromAsset("../assets/world.jpg");
+
+        std::cout<<"tex:"<<textureId<<std::endl;
+        static ImVec2 textureSize(512.f, 512.f);
+        ImGui::Text("texinspect");
+        ImGuiTexInspect::InspectorFlags flags=0;
+        flags |= ImGuiTexInspect::InspectorFlags_FillVertical;
+        flags |= ImGuiTexInspect::InspectorFlags_FillHorizontal;
+        ImGuiTexInspect::SizeIncludingBorder inspectorSize({ImGui::GetContentRegionAvail().x,ImGui::GetContentRegionAvail().y});
+        if(ImGuiTexInspect::BeginInspectorPanel("Inspector", textureId, textureSize, flags, inspectorSize))
+            ImGuiTexInspect::EndInspectorPanel();
     }ImGui::End();
-     */
 }
 
 int main(int , char *[])
@@ -35,6 +44,7 @@ int main(int , char *[])
     ImmApp::AddOnsParams addOnsParams;
     addOnsParams.withMarkdown = true;
     addOnsParams.withImplot = true;
+    addOnsParams.withTexInspect = true;
 
     ImmApp::Run(runnerParams, addOnsParams);
     return 0;
